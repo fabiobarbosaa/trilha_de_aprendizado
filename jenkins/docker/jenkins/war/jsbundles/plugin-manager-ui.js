@@ -28,19 +28,18 @@ var handlebars_runtime_default = /*#__PURE__*/__webpack_require__.n(handlebars_r
 
 
 var debug = false;
-var jenkins = {}; // gets the base Jenkins URL including context path
+var jenkins = {};
 
+// gets the base Jenkins URL including context path
 jenkins.baseUrl = function () {
   var u = jquery_default()("head").attr("data-rooturl");
-
   if (!u) {
     u = "";
   }
-
   return u;
-}; // awful hack to get around JSONifying things with Prototype taking over wrong. ugh. Prototype is the worst.
+};
 
-
+// awful hack to get around JSONifying things with Prototype taking over wrong. ugh. Prototype is the worst.
 jenkins.stringify = function (o) {
   if (Array.prototype.toJSON) {
     // Prototype f's this up something bad
@@ -50,7 +49,6 @@ jenkins.stringify = function (o) {
       h: Hash.prototype.toJSON,
       s: String.prototype.toJSON
     };
-
     try {
       delete Array.prototype.toJSON;
       delete Object.prototype.toJSON;
@@ -61,15 +59,12 @@ jenkins.stringify = function (o) {
       if (protoJSON.a) {
         Array.prototype.toJSON = protoJSON.a;
       }
-
       if (protoJSON.o) {
         Object.prototype.toJSON = protoJSON.o;
       }
-
       if (protoJSON.h) {
         Hash.prototype.toJSON = protoJSON.h;
       }
-
       if (protoJSON.s) {
         String.prototype.toJSON = protoJSON.s;
       }
@@ -78,25 +73,22 @@ jenkins.stringify = function (o) {
     return JSON.stringify(o);
   }
 };
+
 /**
  * redirect
  */
-
-
 jenkins.goTo = function (url) {
   window_handle.getWindow().location.replace(jenkins.baseUrl() + url);
 };
+
 /**
  * Jenkins AJAX GET callback.
  * If last parameter is an object, will be extended to jQuery options (e.g. pass { error: function() ... } to handle errors)
  */
-
-
 jenkins.get = function (url, success, options) {
   if (debug) {
     console.log("get: " + url);
   }
-
   var args = {
     url: jenkins.baseUrl() + url,
     type: "GET",
@@ -104,50 +96,41 @@ jenkins.get = function (url, success, options) {
     dataType: "json",
     success: success
   };
-
   if (options instanceof Object) {
     jquery_default().extend(args, options);
   }
-
   jquery_default().ajax(args);
 };
+
 /**
  * Jenkins AJAX POST callback, formats data as a JSON object post (note: works around prototype.js ugliness using stringify() above)
  * If last parameter is an object, will be extended to jQuery options (e.g. pass { error: function() ... } to handle errors)
  */
-
-
 jenkins.post = function (url, data, success, options) {
   if (debug) {
     console.log("post: " + url);
-  } // handle crumbs
+  }
 
-
+  // handle crumbs
   var headers = {};
   var wnd = window_handle.getWindow();
   var crumb;
-
   if ("crumb" in options) {
     crumb = options.crumb;
   } else if ("crumb" in wnd) {
     crumb = wnd.crumb;
   }
-
   if (crumb) {
     headers[crumb.fieldName] = crumb.value;
   }
-
   var formBody = data;
-
   if (formBody instanceof Object) {
     if (crumb) {
       formBody = jquery_default().extend({}, formBody);
       formBody[crumb.fieldName] = crumb.value;
     }
-
     formBody = jenkins.stringify(formBody);
   }
-
   var args = {
     url: jenkins.baseUrl() + url,
     type: "POST",
@@ -158,75 +141,63 @@ jenkins.post = function (url, data, success, options) {
     success: success,
     headers: headers
   };
-
   if (options instanceof Object) {
     jquery_default().extend(args, options);
   }
-
   jquery_default().ajax(args);
 };
+
 /**
  *  handlebars setup, done for backwards compatibility because some plugins depend on it
  */
-
-
 jenkins.initHandlebars = function () {
   return (handlebars_runtime_default());
 };
+
 /**
  * Load translations for the given bundle ID, provide the message object to the handler.
  * Optional error handler as the last argument.
  */
-
-
 jenkins.loadTranslations = function (bundleName, handler, onError) {
   jenkins.get("/i18n/resourceBundle?baseName=" + bundleName, function (res) {
     if (res.status !== "ok") {
       if (onError) {
         onError(res.message);
       }
-
       throw "Unable to load localization data: " + res.message;
     }
-
     var translations = res.data;
-
     if ("undefined" !== typeof Proxy) {
       translations = new Proxy(translations, {
         get: function (target, property) {
           if (property in target) {
             return target[property];
           }
-
           if (debug) {
             console.log('"' + property + '" not found in translation bundle.');
           }
-
           return property;
         }
       });
     }
-
     handler(translations);
   });
 };
+
 /**
  * Runs a connectivity test, calls handler with a boolean whether there is sufficient connectivity to the internet
  */
-
-
 jenkins.testConnectivity = function (siteId, handler) {
   // check the connectivity api
   var testConnectivity = function () {
     jenkins.get("/updateCenter/connectionStatus?siteId=" + siteId, function (response) {
       if (response.status !== "ok") {
         handler(false, true, response.message);
-      } // Define statuses, which need additional check iteration via async job on the Jenkins master
+      }
+
+      // Define statuses, which need additional check iteration via async job on the Jenkins master
       // Statuses like "OK" or "SKIPPED" are considered as fine.
-
-
       var uncheckedStatuses = ["PRECHECK", "CHECKING", "UNCHECKED"];
-
       if (uncheckedStatuses.indexOf(response.data.updatesite) >= 0 || uncheckedStatuses.indexOf(response.data.internet) >= 0) {
         setTimeout(testConnectivity, 100);
       } else {
@@ -252,14 +223,12 @@ jenkins.testConnectivity = function (siteId, handler) {
       }
     });
   };
-
   testConnectivity();
 };
+
 /**
  * gets the window containing a form, taking in to account top-level iframes
  */
-
-
 jenkins.getWindow = function ($form) {
   $form = jquery_default()($form);
   var wnd = window_handle.getWindow();
@@ -274,16 +243,14 @@ jenkins.getWindow = function ($form) {
   });
   return wnd;
 };
+
 /**
  * Builds a stapler form post
  */
-
-
 jenkins.buildFormPost = function ($form) {
   $form = jquery_default()($form);
   var wnd = jenkins.getWindow($form);
   var form = $form[0];
-
   if (wnd.buildFormTree(form)) {
     return $form.serialize() + "&" + jquery_default().param({
       "core:apply": "",
@@ -291,25 +258,22 @@ jenkins.buildFormPost = function ($form) {
       json: $form.find("input[name=json]").val()
     });
   }
-
   return "";
 };
+
 /**
  * Gets the crumb, if crumbs are enabled
  */
-
-
 jenkins.getFormCrumb = function ($form) {
   $form = jquery_default()($form);
   var wnd = jenkins.getWindow($form);
   return wnd.crumb;
 };
+
 /**
  * Jenkins Stapler JSON POST callback
  * If last parameter is an object, will be extended to jQuery options (e.g. pass { error: function() ... } to handle errors)
  */
-
-
 jenkins.staplerPost = function (url, $form, success, options) {
   $form = jquery_default()($form);
   var postBody = jenkins.buildFormPost($form);
@@ -320,17 +284,16 @@ jenkins.staplerPost = function (url, $form, success, options) {
     crumb: crumb
   }, options));
 };
-
 /* harmony default export */ var util_jenkins = (jenkins);
 ;// CONCATENATED MODULE: ./src/main/js/api/pluginManager.js
 /**
  * Provides a wrapper to interact with the plugin manager & update center
  */
- //Get plugin info (plugins + recommended plugin list) from update centers.
 
+
+//Get plugin info (plugins + recommended plugin list) from update centers.
 var plugins;
 var pluginManager = {};
-
 pluginManager.initialPluginList = function (handler) {
   util_jenkins.get("/setupWizard/platformPluginList", function (response) {
     if (response.status !== "ok") {
@@ -340,7 +303,6 @@ pluginManager.initialPluginList = function (handler) {
       });
       return;
     }
-
     handler.call({
       isError: false
     }, response.data);
@@ -353,33 +315,28 @@ pluginManager.initialPluginList = function (handler) {
       });
     }
   });
-}; // Call this to initialize the plugin list
+};
 
-
+// Call this to initialize the plugin list
 pluginManager.init = function (handler) {
   pluginManager.initialPluginList(function (initialPluginCategories) {
     plugins = {};
     plugins.names = [];
     plugins.recommendedPlugins = [];
     plugins.availablePlugins = initialPluginCategories;
-
     for (var i = 0; i < initialPluginCategories.length; i++) {
       var pluginCategory = initialPluginCategories[i];
       var categoryPlugins = pluginCategory.plugins;
-
       for (var ii = 0; ii < categoryPlugins.length; ii++) {
         var plugin = categoryPlugins[ii];
         var pluginName = plugin.name;
-
         if (plugins.names.indexOf(pluginName) === -1) {
           plugins.names.push(pluginName);
-
           if (plugin.suggested) {
             plugins.recommendedPlugins.push(pluginName);
           } else if (pluginCategory.category === "Languages") {
             var language = window.navigator.userLanguage || window.navigator.language;
             var code = language.toLocaleLowerCase();
-
             if (pluginName === "localization-" + code) {
               plugins.recommendedPlugins.push(pluginName);
             }
@@ -387,49 +344,45 @@ pluginManager.init = function (handler) {
         }
       }
     }
-
     handler();
   });
-}; // default 10 seconds for AJAX responses to return before triggering an error condition
+};
 
-
+// default 10 seconds for AJAX responses to return before triggering an error condition
 var pluginManagerErrorTimeoutMillis = 10 * 1000;
+
 /**
  * Get the curated list of plugins to be offered in the wizard.
  * @returns The curated list of plugins to be offered in the wizard.
  */
-
 pluginManager.plugins = function () {
   return plugins.availablePlugins;
 };
+
 /**
  * Get the curated list of plugins to be offered in the wizard by name only.
  * @returns The curated list of plugins to be offered in the wizard by name only.
  */
-
-
 pluginManager.pluginNames = function () {
   return plugins.names;
 };
+
 /**
  * Get the subset of plugins (subset of the plugin list) that are recommended by default.
  * <p>
  * The user can easily change this selection.
  * @returns The subset of plugins (subset of the plugin list) that are recommended by default.
  */
-
-
 pluginManager.recommendedPluginNames = function () {
   return plugins.recommendedPlugins.slice(); // copy this
 };
+
 /**
  * Call this function to install plugins, will pass a correlationId to the complete callback which
  * may be used to restrict further calls getting plugin lists. Note: do not use the correlation id.
  * If handler is called with this.isError, there will be a corresponding this.errorMessage indicating
  * the failure reason
  */
-
-
 pluginManager.installPlugins = function (plugins, handler) {
   util_jenkins.post("/pluginManager/installPlugins", {
     dynamicLoad: true,
@@ -442,7 +395,6 @@ pluginManager.installPlugins = function (plugins, handler) {
       });
       return;
     }
-
     handler.call({
       isError: false
     }, response.data.correlationId);
@@ -456,20 +408,17 @@ pluginManager.installPlugins = function (plugins, handler) {
     }
   });
 };
+
 /**
  * Accepts 1 or 2 arguments, if argument 2 is not provided all installing plugins will be passed
  * to the handler function. If argument 2 is non-null, it will be treated as a correlationId, which
  * must be retrieved from a prior installPlugins call.
  */
-
-
 pluginManager.installStatus = function (handler, correlationId) {
   var url = "/updateCenter/installStatus";
-
   if (correlationId !== undefined) {
     url += "?correlationId=" + correlationId;
   }
-
   util_jenkins.get(url, function (response) {
     if (response.status !== "ok") {
       handler.call({
@@ -478,7 +427,6 @@ pluginManager.installStatus = function (handler, correlationId) {
       });
       return;
     }
-
     handler.call({
       isError: false
     }, response.data);
@@ -492,6 +440,7 @@ pluginManager.installStatus = function (handler, correlationId) {
     }
   });
 };
+
 /**
  * Provides a list of the available plugins, some useful properties is:
  * [
@@ -499,8 +448,6 @@ pluginManager.installStatus = function (handler, correlationId) {
  *  ...
  * ]
  */
-
-
 pluginManager.availablePlugins = function (handler) {
   util_jenkins.get("/pluginManager/plugins", function (response) {
     if (response.status !== "ok") {
@@ -510,7 +457,6 @@ pluginManager.availablePlugins = function (handler) {
       });
       return;
     }
-
     handler.call({
       isError: false
     }, response.data);
@@ -524,7 +470,6 @@ pluginManager.availablePlugins = function (handler) {
     }
   });
 };
-
 pluginManager.availablePluginsSearch = function (query, limit, handler) {
   util_jenkins.get("/pluginManager/pluginsSearch?query=" + query + "&limit=" + limit, function (response) {
     if (response.status !== "ok") {
@@ -534,7 +479,6 @@ pluginManager.availablePluginsSearch = function (query, limit, handler) {
       });
       return;
     }
-
     handler.call({
       isError: false
     }, response.data);
@@ -548,20 +492,17 @@ pluginManager.availablePluginsSearch = function (query, limit, handler) {
     }
   });
 };
+
 /**
  * Accepts 1 or 2 arguments, if argument 2 is not provided all installing plugins will be passed
  * to the handler function. If argument 2 is non-null, it will be treated as a correlationId, which
  * must be retrieved from a prior installPlugins call.
  */
-
-
 pluginManager.incompleteInstallStatus = function (handler, correlationId) {
   var url = "/updateCenter/incompleteInstallStatus";
-
   if (correlationId !== undefined) {
     url += "?correlationId=" + correlationId;
   }
-
   util_jenkins.get(url, function (response) {
     if (response.status !== "ok") {
       handler.call({
@@ -570,7 +511,6 @@ pluginManager.incompleteInstallStatus = function (handler, correlationId) {
       });
       return;
     }
-
     handler.call({
       isError: false
     }, response.data);
@@ -584,11 +524,10 @@ pluginManager.incompleteInstallStatus = function (handler, correlationId) {
     }
   });
 };
+
 /**
  * Call this to complete the installation without installing anything
  */
-
-
 pluginManager.completeInstall = function (handler) {
   util_jenkins.post("/setupWizard/completeInstall", {}, function () {
     handler.call({
@@ -604,11 +543,10 @@ pluginManager.completeInstall = function (handler) {
     }
   });
 };
+
 /**
  * Indicates there is a restart required to complete plugin installations
  */
-
-
 pluginManager.getRestartStatus = function (handler) {
   util_jenkins.get("/setupWizard/restartStatus", function (response) {
     handler.call({
@@ -624,11 +562,10 @@ pluginManager.getRestartStatus = function (handler) {
     }
   });
 };
+
 /**
  * Skip failed plugins, continue
  */
-
-
 pluginManager.installPluginsDone = function (handler) {
   util_jenkins.post("/pluginManager/installPluginsDone", {}, function () {
     handler();
@@ -642,11 +579,10 @@ pluginManager.installPluginsDone = function (handler) {
     }
   });
 };
+
 /**
  * Restart Jenkins
  */
-
-
 pluginManager.restartJenkins = function (handler) {
   util_jenkins.post("/updateCenter/safeRestart", {}, function () {
     handler.call({
@@ -662,10 +598,8 @@ pluginManager.restartJenkins = function (handler) {
     }
   });
 };
-
 /* harmony default export */ var api_pluginManager = (pluginManager);
 ;// CONCATENATED MODULE: ./src/main/js/plugin-manager-ui.js
-
 
 
 
@@ -678,18 +612,15 @@ function applyFilter(searchQuery) {
     var selectedPlugins = [];
     var filterInput = document.getElementById("filter-box");
     filterInput.parentElement.classList.remove("jenkins-search--loading");
-
     function clearOldResults() {
       if (!admin) {
         tbody.innerHTML = "";
       } else {
         var rows = tbody.querySelectorAll("tr");
-
         if (rows) {
           selectedPlugins = [];
           rows.forEach(function (row) {
             var input = row.querySelector("input");
-
             if (input.checked === true) {
               var pluginName = input.name.split(".")[1];
               selectedPlugins.push(pluginName);
@@ -700,7 +631,6 @@ function applyFilter(searchQuery) {
         }
       }
     }
-
     clearOldResults();
     var rows = available_default()({
       plugins: plugins.filter(plugin => selectedPlugins.indexOf(plugin.name) === -1),
@@ -709,11 +639,9 @@ function applyFilter(searchQuery) {
     tbody.insertAdjacentHTML("beforeend", rows);
   });
 }
-
 var handleFilter = function (e) {
   applyFilter(e.target.value);
 };
-
 var debouncedFilter = debounce_default()(handleFilter, 150);
 document.addEventListener("DOMContentLoaded", function () {
   var filterInput = document.getElementById("filter-box");
@@ -721,7 +649,6 @@ document.addEventListener("DOMContentLoaded", function () {
     debouncedFilter(e);
     filterInput.parentElement.classList.add("jenkins-search--loading");
   });
-  filterInput.focus();
   applyFilter(filterInput.value);
   setTimeout(function () {
     layoutUpdateCallback.call();

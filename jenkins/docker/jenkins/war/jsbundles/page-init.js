@@ -10,6 +10,7 @@
 /* harmony import */ var jenkins_js_modules__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(563);
 
 
+
 /*
  * Page initialisation tasks.
  */
@@ -18,11 +19,9 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()(function () {
   loadScripts();
   loadCSS();
 });
-
 function loadScripts() {
   jquery__WEBPACK_IMPORTED_MODULE_0___default()(".jenkins-js-load").each(function () {
     var scriptUrl = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).attr("data-src");
-
     if (scriptUrl) {
       // jsModules.addScript will ensure that the script is
       // loaded once and once only. So, this can be considered
@@ -32,11 +31,9 @@ function loadScripts() {
     }
   });
 }
-
 function loadCSS() {
   jquery__WEBPACK_IMPORTED_MODULE_0___default()(".jenkins-css-load").each(function () {
     var cssUrl = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).attr("data-src");
-
     if (cssUrl) {
       // jsModules.addCSSToPage will ensure that the CSS is
       // loaded once and once only. So, this can be considered
