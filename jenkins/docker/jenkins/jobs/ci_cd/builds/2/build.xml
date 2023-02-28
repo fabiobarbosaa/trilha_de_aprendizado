@@ -1,0 +1,154 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-build plugin="workflow-job@1268.v6eb_e2ee1a_85a">
+  <actions>
+    <hudson.model.CauseAction>
+      <causeBag class="linked-hash-map">
+        <entry>
+          <hudson.model.Cause_-UserIdCause>
+            <userId>admin</userId>
+          </hudson.model.Cause_-UserIdCause>
+          <int>1</int>
+        </entry>
+      </causeBag>
+    </hudson.model.CauseAction>
+    <org.jenkinsci.plugins.workflow.libs.LibrariesAction plugin="pipeline-groovy-lib@629.vb_5627b_ee2104">
+      <libraries/>
+    </org.jenkinsci.plugins.workflow.libs.LibrariesAction>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.ExecutionModelAction plugin="pipeline-model-definition@2.2118.v31fd5b_9944b_5">
+      <stagesUUID>2dd87496-f5bf-4b91-b752-e50c16bd3536</stagesUUID>
+      <pipelineDefs>
+        <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTPipelineDef plugin="pipeline-model-api@2.2118.v31fd5b_9944b_5">
+          <stages>
+            <stages>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                <name>Build Image</name>
+                <branches>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                    <name>default</name>
+                    <steps>
+                      <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                        <name>script</name>
+                        <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                          <arguments class="linked-hash-map">
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>scriptBlock</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                <value class="string">dockerapp = docker.build(&quot;fabiobarbosaa/VS_CODE_DE_ACADEMY_JENKINS:0.1.${env.BUILD_ID}-dev&quot;, &apos;-f ./jenkins/Dockerfile ./jenkins&apos;)</value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                            </entry>
+                          </arguments>
+                        </args>
+                      </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                    </steps>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                </branches>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+            </stages>
+            <uuid>2dd87496-f5bf-4b91-b752-e50c16bd3536</uuid>
+          </stages>
+          <agent>
+            <agentType>
+              <key>any</key>
+            </agentType>
+          </agent>
+        </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTPipelineDef>
+      </pipelineDefs>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.ExecutionModelAction>
+  </actions>
+  <queueId>17</queueId>
+  <timestamp>1677602508559</timestamp>
+  <startTime>1677602508600</startTime>
+  <result>FAILURE</result>
+  <duration>112358</duration>
+  <charset>UTF-8</charset>
+  <keepLog>false</keepLog>
+  <execution class="org.jenkinsci.plugins.workflow.cps.CpsFlowExecution">
+    <result>FAILURE</result>
+    <script>pipeline {
+    agent any
+
+    stages{
+        stage(&apos;Build Image&apos;){
+            steps{ 
+                script{
+                    dockerapp = docker.build(&quot;fabiobarbosaa/VS_CODE_DE_ACADEMY_JENKINS:0.1.${env.BUILD_ID}-dev&quot;, &apos;-f ./jenkins/Dockerfile ./jenkins&apos;)
+                }
+            }
+        /* }
+        stage(&apos;Http Request - Jenkins&apos;) {
+            steps {
+                script{
+                    def response = httpRequest responseHandle: &apos;STRING&apos;,
+                           url: &apos;http://10.2.3.239:8084&apos;,
+                           validResponseCodes: &apos;200&apos;
+                }
+            }
+        }
+        stage(&apos;Push Image&apos;){
+            steps{ 
+                script{
+                    docker.withRegistry(&apos;https://registry.hub.docker.com&apos;, &apos;dockerhub&apos;){
+                        dockerapp.push(&quot;0.1.${env.BUILD_ID}-dev&quot;)
+                        dockerapp.push(&apos;latest&apos;)
+                    }
+                }
+            }
+        } */
+    }
+  }
+
+
+
+        // stage(&apos;Checkout Release&apos;) {
+        //     steps {
+        //        checkout([$class: &apos;GitSCM&apos;, branches: [[name: &apos;release&apos;]], extensions: [], userRemoteConfigs: [[credentialsId: &apos;dev&apos;, url: &apos;https://dev.azure.com/eloanalytics/_git/SEFAZ-PI%20Big%20Data%20Analytics%20Pauta%20Fiscal&apos;]]])
+        //     }
+        // }
+        // stage(&apos;Criação de Release&apos;) {
+        //     steps {
+        //        sh &apos;test -f release.tar.gz &amp;&amp; rm release.tar.gz &amp;&amp; tar -czvf release.tar.gz * || tar -czvf release.tar.gz *&apos;
+        //     }
+        // }
+        // stage(&apos;Deploy&apos;) {
+        //     steps {
+        //         sshPublisher(publishers: [sshPublisherDesc(configName: &apos;prod&apos;, transfers: [sshTransfer(cleanRemote: false, excludes: &apos;&apos;, execCommand: &apos;tar -xzvf release.tar.gz&apos;, execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: &apos;[, ]+&apos;, remoteDirectory: &apos;&apos;, remoteDirectorySDF: false, removePrefix: &apos;&apos;, sourceFiles: &apos;release.tar.gz&apos;)], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+        //     }
+        // }    
+        //} 
+}
+</script>
+    <loadedScripts class="map"/>
+    <durabilityHint>MAX_SURVIVABILITY</durabilityHint>
+    <timings class="concurrent-hash-map">
+      <entry>
+        <string>flowNode</string>
+        <long>701633300</long>
+      </entry>
+      <entry>
+        <string>classLoad</string>
+        <long>11021359100</long>
+      </entry>
+      <entry>
+        <string>run</string>
+        <long>10084019700</long>
+      </entry>
+      <entry>
+        <string>parse</string>
+        <long>3113695700</long>
+      </entry>
+      <entry>
+        <string>saveProgram</string>
+        <long>2596401100</long>
+      </entry>
+    </timings>
+    <sandbox>true</sandbox>
+    <iota>12</iota>
+    <head>1:12</head>
+    <done>true</done>
+    <resumeBlocked>false</resumeBlocked>
+  </execution>
+  <completed>true</completed>
+  <checkouts class="hudson.util.PersistedList"/>
+</flow-build>
