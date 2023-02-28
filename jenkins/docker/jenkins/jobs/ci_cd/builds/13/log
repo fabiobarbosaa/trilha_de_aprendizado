@@ -1,0 +1,21 @@
+Started by user [8mha:////4CVnVPAmhbi4qnmY3GkZ6Ql6aTB7+yIdeSLr97QOGxDKAAAAlx+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzhEgZu/dLi1CL9xJTczDwAMuoES8AAAAA=[0mFabio Barbosa Pinto
+Lightweight checkout support not available, falling back to full checkout.
+Checking out git https://github.com/fabiobarbosaa/trilha_de_aprendizado into /var/jenkins_home/workspace/ci_cd@script/4701dcff929f267ce4effee50fc11f00b71d503dd7e9c8449707417001116eb6 to read Jenkinsfile
+The recommended git tool is: git
+No credentials specified
+Cloning the remote Git repository
+Cloning repository https://github.com/fabiobarbosaa/trilha_de_aprendizado
+ > git init /var/jenkins_home/workspace/ci_cd@script/4701dcff929f267ce4effee50fc11f00b71d503dd7e9c8449707417001116eb6 # timeout=10
+Fetching upstream changes from https://github.com/fabiobarbosaa/trilha_de_aprendizado
+ > git --version # timeout=10
+ > git --version # 'git version 2.30.2'
+ > git fetch --tags --force --progress -- https://github.com/fabiobarbosaa/trilha_de_aprendizado +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/fabiobarbosaa/trilha_de_aprendizado # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin//master^{commit} # timeout=10
+ > git rev-parse /master^{commit} # timeout=10
+ > git rev-parse /master^{commit} # timeout=10
+ERROR: Couldn't find any revision to build. Verify the repository and branch configuration for this job.
+ERROR: Maximum checkout retry attempts reached, aborting
+Finished: FAILURE

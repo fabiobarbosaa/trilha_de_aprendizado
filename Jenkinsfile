@@ -30,6 +30,7 @@ pipeline {
         } */
     }
 }
+
         // stage('Checkout Release') {
         //     steps {
         //        checkout([$class: 'GitSCM', branches: [[name: 'release']], extensions: [], userRemoteConfigs: [[credentialsId: 'dev', url: 'https://dev.azure.com/eloanalytics/_git/SEFAZ-PI%20Big%20Data%20Analytics%20Pauta%20Fiscal']]])

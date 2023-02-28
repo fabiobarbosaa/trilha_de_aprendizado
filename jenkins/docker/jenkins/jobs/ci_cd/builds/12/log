@@ -1,0 +1,13 @@
+Started by user [8mha:////4CVnVPAmhbi4qnmY3GkZ6Ql6aTB7+yIdeSLr97QOGxDKAAAAlx+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzhEgZu/dLi1CL9xJTczDwAMuoES8AAAAA=[0mFabio Barbosa Pinto
+java.lang.IllegalArgumentException: Invalid refspec refs/heads/**
+	at org.eclipse.jgit.transport.RefSpec.checkValid(RefSpec.java:599)
+	at org.eclipse.jgit.transport.RefSpec.<init>(RefSpec.java:203)
+	at org.eclipse.jgit.transport.RefSpec.<init>(RefSpec.java:255)
+	at jenkins.plugins.git.GitSCMFileSystem$BuilderImpl.build(GitSCMFileSystem.java:404)
+	at jenkins.scm.api.SCMFileSystem.of(SCMFileSystem.java:219)
+	at org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition.create(CpsScmFlowDefinition.java:118)
+	at org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition.create(CpsScmFlowDefinition.java:70)
+	at org.jenkinsci.plugins.workflow.job.WorkflowRun.run(WorkflowRun.java:312)
+	at hudson.model.ResourceController.execute(ResourceController.java:107)
+	at hudson.model.Executor.run(Executor.java:449)
+Finished: FAILURE
